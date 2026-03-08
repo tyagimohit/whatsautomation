@@ -1,5 +1,6 @@
 package com.example.whatsappautomation.readwhatsapp.service;
 
+import com.example.whatsappautomation.openAI.ChatHistoryService;
 import com.example.whatsappautomation.openAI.OpenAIService;
 import com.example.whatsappautomation.readwhatsapp.entity.Image;
 import com.example.whatsappautomation.readwhatsapp.entity.Message;
@@ -27,6 +28,9 @@ public class WhatsAppReadMessageService {
 
     @Autowired
     private OpenAIService openAIService;
+
+    @Autowired
+    private ChatHistoryService chatHistoryService;
 
     public String process(Map<String, Object> payload) {
         if (payload == null) return "";
@@ -76,23 +80,19 @@ public class WhatsAppReadMessageService {
         }
 
         return "";
-
-
-//        switch (type) {
-//            case "text" : handleText(whatsAppMessage);
-//            break;
-//
-//            case "image": handleImage(whatsAppMessage);
-//                break;
-//        }
     }
 
     private String handleText(Message message, String phoneNumber) {
         System.out.println("WhatsApp message: "+message.getText());
+        List<Map<String, Object>> history = chatHistoryService.getHistory(phoneNumber);
+        String userMessage = message.getText();
+        String reply = openAIService.askGemini(userMessage, history);
 
-        String aiResponse = openAIService.askGemini(message.getText());
+        // Save to history
+        chatHistoryService.addMessage(phoneNumber, "user", userMessage);
+        chatHistoryService.addMessage(phoneNumber, "model", reply);
 
-        whatsAppService.sendMessage(phoneNumber, aiResponse);
+        whatsAppService.sendMessage(phoneNumber, reply);
 
         whatsappApiClient.markAsRead(message.getId());
         return "text";

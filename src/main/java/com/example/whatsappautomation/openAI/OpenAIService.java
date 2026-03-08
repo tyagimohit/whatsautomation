@@ -11,6 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class OpenAIService {
 
@@ -20,31 +24,46 @@ public class OpenAIService {
     @Value("${openai.gemini-url}")
     private String apiUrl;
 
-    public String askGemini(String prompt) {
+    public String askGemini(String prompt,  List<Map<String, Object>> chatHistory) {
 
         RestTemplate restTemplate = new RestTemplate();
 
         String context = "You act as a professional singer/artist and respond in one line only approx 8 to 10 words.";
        // prompt=context+prompt;
-        String requestBody = """
-        {
-          "contents":[
-            {
-              "parts":[
-                {
-                  "text":"%s"
-                }
-              ]
-            }
-          ]
-        }
-        """.formatted(prompt);
+
+        List<Map<String, Object>> contents = new ArrayList<>();
+
+        // Inject persona as first user turn (Gemini doesn't have a system role)
+        contents.add(Map.of(
+                "role", "user",
+                "parts", List.of(Map.of("text", "ACT as professional singer"))
+        ));
+        contents.add(Map.of(
+                "role", "model",
+                "parts", List.of(Map.of("text", "Understood! I am Aria, your professional artist guide. How can I help you today? 🎨"))
+        ));
+
+        // Add chat history for context
+        contents.addAll(chatHistory);
+
+        // Add current user message
+        contents.add(Map.of(
+                "role", "user",
+                "parts", List.of(Map.of("text", prompt))
+        ));
+
+        Map<String, Object> requestBody = Map.of("contents", contents);
+
+
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("X-goog-api-key", apiKey);
 
-        HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+        //HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+
+        Map<String, Object> entity = Map.of("contents", contents);
+
 
         int retries = 3;
 
