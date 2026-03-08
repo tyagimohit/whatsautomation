@@ -49,9 +49,10 @@ public class OpenAIService {
                 "parts", List.of(Map.of("text", prompt))
         ));
 
+        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=" + apiKey;
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("X-goog-api-key", apiKey);
 
         Map<String, Object> entity = Map.of("contents", contents);
 
@@ -60,7 +61,7 @@ public class OpenAIService {
         for (int i = 0; i < retries; i++) {
             try {
                 ResponseEntity<String> response =
-                        restTemplate.postForEntity(apiUrl, entity, String.class);
+                        restTemplate.postForEntity(url, entity, String.class);
 
                 String responseText = extractText(response.getBody());
                 System.out.println("----exact-response----->>"+responseText);
