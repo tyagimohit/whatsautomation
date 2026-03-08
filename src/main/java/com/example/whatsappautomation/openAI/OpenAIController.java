@@ -6,6 +6,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/ai")
 public class OpenAIController {
@@ -16,7 +20,8 @@ public class OpenAIController {
     @GetMapping("/ask")
     public String askAI(@RequestParam String prompt) {
 
-        return openAIService.askGemini(prompt);
+        List<Map<String, Object>> list = new ArrayList<>();
+        return openAIService.askGemini(prompt, list);
     }
 
 }
