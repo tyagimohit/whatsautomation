@@ -25,7 +25,7 @@ public class OpenAIService {
         RestTemplate restTemplate = new RestTemplate();
 
         String context = "You act as a professional singer/artist and respond in one line only approx 8 to 10 words.";
-        prompt=context+prompt;
+       // prompt=context+prompt;
         String requestBody = """
         {
           "contents":[
