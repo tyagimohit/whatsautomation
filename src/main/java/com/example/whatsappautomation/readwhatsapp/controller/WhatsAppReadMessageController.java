@@ -4,7 +4,6 @@ import com.example.whatsappautomation.readwhatsapp.entity.ProcessedMessage;
 import com.example.whatsappautomation.readwhatsapp.entity.ProcessedMessageRepository;
 import com.example.whatsappautomation.readwhatsapp.service.InvoiceDraftService;
 import com.example.whatsappautomation.readwhatsapp.service.WhatsAppReadMessageService;
-import com.example.whatsappautomation.readwhatsapp.util.InvoiceOCR;
 import com.example.whatsappautomation.readwhatsapp.util.WhatsAppParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +23,6 @@ import java.util.Map;
 public class WhatsAppReadMessageController {
 
     private final ProcessedMessageRepository processedMessageRepo;
-
-    @Autowired
-    InvoiceOCR invoiceOCR;
 
     @Autowired
     WhatsAppReadMessageService whatsAppReadMessageService;
@@ -59,8 +55,6 @@ public class WhatsAppReadMessageController {
         WhatsAppParser.Event event = WhatsAppParser.parse(payload);
 
         String imageFile =whatsAppReadMessageService.process(payload);
-
-        //String imageText = invoiceOCR.getTextFromImage(imagepath);
 
         if("text".equals(imageFile)){
             return ResponseEntity.ok().build();
