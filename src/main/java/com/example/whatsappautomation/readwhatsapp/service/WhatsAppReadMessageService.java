@@ -47,6 +47,8 @@ public class WhatsAppReadMessageService {
 
         String phoneNumber = (String) message.get("from");
 
+        System.out.println("----from number:----->>"+phoneNumber);
+
         Message whatsAppMessage = new Message();
 
         whatsAppMessage.setType((String) message.get("type"));
@@ -72,8 +74,6 @@ public class WhatsAppReadMessageService {
 
         whatsAppMessage.setImage(image);
         whatsAppMessage.setTimestamp((String) message.get("timestamp"));
-
-
 
         if(type.equals("image")){
             return handleImage(whatsAppMessage);

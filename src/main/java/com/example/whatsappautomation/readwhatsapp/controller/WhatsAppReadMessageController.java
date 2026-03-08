@@ -37,6 +37,8 @@ public class WhatsAppReadMessageController {
     @PostMapping
     public ResponseEntity<Void> receive(@RequestBody Map<String, Object> payload) throws Exception {
 
+        System.out.println("----whatspp call initiated----->>");
+
         if (isStatusEvent(payload)) {
             return ResponseEntity.ok().build();
         }
@@ -54,7 +56,7 @@ public class WhatsAppReadMessageController {
 
         WhatsAppParser.Event event = WhatsAppParser.parse(payload);
 
-        String imageFile =whatsAppReadMessageService.process(payload);
+        String imageFile = whatsAppReadMessageService.process(payload);
 
         if("text".equals(imageFile)){
             return ResponseEntity.ok().build();
@@ -73,9 +75,6 @@ public class WhatsAppReadMessageController {
 
         System.out.println("Status Code: " + response.statusCode());
         System.out.println("Response Body: " + response.body());
-
-
-
 
         if ("IMAGE".equals(event.type())) {
             service.createDraft(event.phone());

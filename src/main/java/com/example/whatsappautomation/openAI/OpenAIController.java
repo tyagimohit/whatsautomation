@@ -19,7 +19,6 @@ public class OpenAIController {
 
     @GetMapping("/ask")
     public String askAI(@RequestParam String prompt) {
-
         List<Map<String, Object>> list = new ArrayList<>();
         return openAIService.askGemini(prompt, list);
     }

@@ -25,18 +25,15 @@ public class OpenAIService {
     private String apiUrl;
 
     public String askGemini(String prompt,  List<Map<String, Object>> chatHistory) {
+        System.out.println("----user entered prompt----->>"+prompt);
 
         RestTemplate restTemplate = new RestTemplate();
-
-        String context = "You act as a professional singer/artist and respond in one line only approx 8 to 10 words.";
-       // prompt=context+prompt;
-
         List<Map<String, Object>> contents = new ArrayList<>();
 
         // Inject persona as first user turn (Gemini doesn't have a system role)
         contents.add(Map.of(
                 "role", "user",
-                "parts", List.of(Map.of("text", "ACT as professional singer"))
+                "parts", List.of(Map.of("text", "Act as a professional singer"))
         ));
         contents.add(Map.of(
                 "role", "model",
@@ -52,24 +49,16 @@ public class OpenAIService {
                 "parts", List.of(Map.of("text", prompt))
         ));
 
-        Map<String, Object> requestBody = Map.of("contents", contents);
-
-
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("X-goog-api-key", apiKey);
 
-        //HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
-
         Map<String, Object> entity = Map.of("contents", contents);
-
 
         int retries = 3;
 
         for (int i = 0; i < retries; i++) {
             try {
-
                 ResponseEntity<String> response =
                         restTemplate.postForEntity(apiUrl, entity, String.class);
 
@@ -78,7 +67,6 @@ public class OpenAIService {
                 return responseText;
             } catch (HttpServerErrorException.ServiceUnavailable ex) {
                 System.out.println("Gemini busy. Retrying...");
-
                 try {
                     Thread.sleep(2000); // wait 2 seconds
                 } catch (InterruptedException ignored) {}
